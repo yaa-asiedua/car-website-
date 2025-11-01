@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Inventory - AutoElite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --accent: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --whatsapp: #25D366;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            transition: color 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Main Layout */
+        .listing-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            padding: 40px 0;
+        }
+
+        /* Filters */
+        .filters-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .price-input, .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* WhatsApp Section */
+        .whatsapp-section {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .whatsapp-section h3 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .whatsapp-btn {
+            background: white;
+            color: #25D366;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        /* Results */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .results-count {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sort-select {
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* Cars Grid */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .car-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .car-badge.featured {
+            background: var(--danger);
+        }
+
+        .car-badge.new {
+            background: var(--success);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .car-details {
+            padding: 20px;
+        }
+
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .car-title h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .car-year {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .car-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .car-specs {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .car-spec {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+
+        .car-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-whatsapp {
+            background: var(--whatsapp);
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Quick Filters */
+        .quick-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* WhatsApp Float */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--whatsapp);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            background: #128C7E;
+        }
+
+        /* Mobile */
+        .mobile-filters-btn {
+            display: none;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .listing-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-sidebar {
+                display: none;
+            }
+            
+            .filters-sidebar.active {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                z-index: 1000;
+                border-radius: 0;
+                overflow-y: auto;
+            }
+            
+            .mobile-filters-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-car"></i>
+                    AutoElite
+                </a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="listing.html" class="active">Inventory</a>
+                    <a href="#">Services</a>
+                    <a href="#">About</a>
+                    <a href="#">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Find Your Perfect Car</h1>
+            <p>Browse our collection and contact us directly via WhatsApp</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button class="filter-chip active" data-filter="all">All Cars</button>
+            <button class="filter-chip" data-filter="new">New Arrivals</button>
+            <button class="filter-chip" data-filter="under30">Under $30K</button>
+            <button class="filter-chip" data-filter="suv">SUVs</button>
+            <button class="filter-chip" data-filter="sedan">Sedans</button>
+        </div>
+
+        <!-- Mobile Filters Button -->
+        <button class="mobile-filters-btn" id="mobileFiltersBtn">
+            <i class="fas fa-filter"></i> Show Filters
+        </button>
+
+        <div class="listing-container">
+            <!-- Filters Sidebar -->
+            <aside class="filters-sidebar" id="filtersSidebar">
+                <!-- WhatsApp Contact Section -->
+                <div class="whatsapp-section">
+                    <h3>
+                        <i class="fab fa-whatsapp"></i>
+                        Contact on WhatsApp
+                    </h3>
+                    <p>Ready to buy? Chat with us directly!</p>
+                    <a href="#" class="whatsapp-btn" id="sidebarWhatsapp">
+                        <i class="fab fa-whatsapp"></i> Start Chat
+                    </a>
+                </div>
+
+                <!-- Search -->
+                <div class="filter-section">
+                    <h3>Search Cars</h3>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by make, model...">
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-section">
+                    <h3>Price Range</h3>
+                    <div class="price-range">
+                        <input type="number" class="price-input" placeholder="Min" id="minPrice">
+                        <input type="number" class="price-input" placeholder="Max" id="maxPrice">
+                    </div>
+                </div>
+
+                <!-- Make -->
+                <div class="filter-section">
+                    <h3>Make</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" value="Toyota"> Toyota
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="Honda"> Honda
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="Ford"> Ford
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="BMW"> BMW
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="Mercedes"> Mercedes
+                        </label>
+                    </div>
+                </div>
+
+                <button class="filter-btn" id="applyFilters">Apply Filters</button>
+                <button class="filter-btn" style="background: var(--secondary);" id="resetFilters">Reset Filters</button>
+            </aside>
+
+            <!-- Results Section -->
+            <main class="results-section">
+                <div class="results-header">
+                    <div class="results-count" id="resultsCount">Loading cars...</div>
+                    <div class="sort-options">
+                        <select class="sort-select" id="sortSelect">
+                            <option value="featured">Featured</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="year-new">Year: Newest First</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cars Grid -->
+                <div class="cars-grid" id="carsGrid">
+                    <!-- Cars will be loaded here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="#" class="whatsapp-float" id="whatsappFloat">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // ========================
+        // CONFIGURATION - CHANGE THIS!
+        // ========================
+        const YOUR_WHATSAPP_NUMBER = "279651081"; // REPLACE WITH YOUR ACTUAL NUMBER
+        const COUNTRY_CODE = "+233"; // 1 for US/Canada, 44 for UK, 91 for India, etc.
+
+        // ========================
+        // SAMPLE CAR DATA
+        // ========================
+        const carsData = [
+            {
+                id: 1,
+                make: "Toyota",
+                model: "Camry",
+                year: 2023,
+                price: 28700,
+                mileage: 5200,
+                fuelType: "Hybrid",
+                transmission: "Automatic",
+                type: "Sedan",
+                image: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: "new"
+            },
+            {
+                id: 2,
+                make: "BMW",
+                model: "X5",
+                year: 2022,
+                price: 52400,
+                mileage: 18500,
+                fuelType: "Hybrid",
+                transmission: "Automatic",
+                type: "SUV",
+                image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: "featured"
+            },
+            {
+                id: 3,
+                make: "Mercedes",
+                model: "C-Class",
+                year: 2021,
+                price: 45900,
+                mileage: 22300,
+                fuelType: "Gasoline",
+                transmission: "Automatic",
+                type: "Sedan",
+                image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: ""
+            },
+            {
+                id: 4,
+                make: "Ford",
+                model: "Mustang",
+                year: 2022,
+                price: 39500,
+                mileage: 12800,
+                fuelType: "Gasoline",
+                transmission: "Manual",
+                type: "Coupe",
+                image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: ""
+            },
+            {
+                id: 5,
+                make: "Honda",
+                model: "CR-V",
+                year: 2023,
+                price: 32500,
+                mileage: 3500,
+                fuelType: "Hybrid",
+                transmission: "Automatic",
+                type: "SUV",
+                image: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: "new"
+            },
+            {
+                id: 6,
+                make: "Toyota",
+                model: "RAV4",
+                year: 2023,
+                price: 31200,
+                mileage: 2800,
+                fuelType: "Hybrid",
+                transmission: "Automatic",
+                type: "SUV",
+                image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                badge: "new"
+            }
+        ];
+
+        // ========================
+        // WHATSAPP FUNCTIONS
+        // ========================
+        function generateWhatsAppLink(message = "Hi, I'm interested in your cars") {
+            const fullNumber = COUNTRY_CODE + YOUR_WHATSAPP_NUMBER;
+            const encodedMessage = encodeURIComponent(message);
+            return `https://wa.me/${fullNumber}?text=${encodedMessage}`;
+        }
+
+        function generateCarWhatsAppLink(car, messageType = "inquiry") {
+            const fullNumber = COUNTRY_CODE + YOUR_WHATSAPP_NUMBER;
+            
+            let message = "";
+            switch(messageType) {
+                case "inquiry":
+                    message = `Hi! I'm interested in the ${car.year} ${car.make} ${car.model} for $${car.price.toLocaleString()}. Can you provide more details?`;
+                    break;
+                case "testDrive":
+                    message = `Hi! I'd like to schedule a test drive for the ${car.year} ${car.make} ${car.model}.`;
+                    break;
+                case "price":
+                    message = `Hi! Is the price negotiable for the ${car.year} ${car.make} ${car.model} ($${car.price.toLocaleString()})?`;
+                    break;
+                default:
+                    message = `Hi! I'm interested in the ${car.year} ${car.make} ${car.model}.`;
+            }
+            
+            const encodedMessage = encodeURIComponent(message);
+            return `https://wa.me/${fullNumber}?text=${encodedMessage}`;
+        }
+
+        function openWhatsApp(link) {
+            window.open(link, '_blank');
+        }
+
+        // ========================
+        // CAR CARD CREATION
+        // ========================
+        function createCarCard(car) {
+            const card = document.createElement('div');
+            card.className = 'car-card';
+            
+            const badge = car.badge ? `<div class="car-badge ${car.badge}">${car.badge === 'new' ? 'New' : 'Featured'}</div>` : '';
+            
+            card.innerHTML = `
+                ${badge}
+                <img src="${car.image}" alt="${car.make} ${car.model}" class="car-image">
+                <div class="car-details">
+                    <div class="car-header">
+                        <div class="car-title">
+                            <h3>${car.make} ${car.model}</h3>
+                            <div class="car-year">${car.year}</div>
+                        </div>
+                        <div class="car-price">$${car.price.toLocaleString()}</div>
+                    </div>
+                    <div class="car-specs">
+                        <div class="car-spec">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>${car.mileage.toLocaleString()} mi</span>
+                        </div>
+                        <div class="car-spec">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>${car.fuelType}</span>
+                        </div>
+                        <div class="car-spec">
+                            <i class="fas fa-cog"></i>
+                            <span>${car.transmission}</span>
+                        </div>
+                    </div>
+                    <div class="car-actions">
+                        <button class="btn btn-primary" onclick="viewCarDetails(${car.id})">
+                            View Details
+                        </button>
+                        <button class="btn btn-whatsapp" onclick="contactAboutCar(${car.id})">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function contactAboutCar(carId) {
+            const car = carsData.find(c => c.id === carId);
+            const whatsappLink = generateCarWhatsAppLink(car, "inquiry");
+            openWhatsApp(whatsappLink);
+        }
+
+        function viewCarDetails(carId) {
+            const car = carsData.find(c => c.id === carId);
+            alert(`Car Details:\n${car.year} ${car.make} ${car.model}\nPrice: $${car.price.toLocaleString()}\nMileage: ${car.mileage.toLocaleString()} mi\nFuel: ${car.fuelType}\nTransmission: ${car.transmission}`);
+        }
+
+        // ========================
+        // PAGE FUNCTIONALITY
+        // ========================
+        let currentCars = [...carsData];
+
+        function renderCars(cars) {
+            const carsGrid = document.getElementById('carsGrid');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            resultsCount.textContent = `Showing ${cars.length} vehicles`;
+            
+            if (cars.length === 0) {
+                carsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-car" style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--secondary); margin-bottom: 10px;">No cars found</h3>
+                        <p style="color: var(--secondary);">Try adjusting your filters to see more results.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            carsGrid.innerHTML = '';
+            cars.forEach(car => {
+                const carCard = createCarCard(car);
+                carsGrid.appendChild(carCard);
+            });
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseInt(document.getElementById('maxPrice').value) || 1000000;
+            
+            const selectedMakes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(input => input.value);
+
+            currentCars = carsData.filter(car => {
+                const matchesSearch = !searchTerm || 
+                    car.make.toLowerCase().includes(searchTerm) || 
+                    car.model.toLowerCase().includes(searchTerm);
+                
+                const matchesPrice = car.price >= minPrice && car.price <= maxPrice;
+                const matchesMake = selectedMakes.length === 0 || selectedMakes.includes(car.make);
+                
+                return matchesSearch && matchesPrice && matchesMake;
+            });
+
+            sortCars();
+        }
+
+        function sortCars() {
+            const sortBy = document.getElementById('sortSelect').value;
+            const sortedCars = [...currentCars];
+            
+            switch(sortBy) {
+                case 'price-low':
+                    sortedCars.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    sortedCars.sort((a, b) => b.price - a.price);
+                    break;
+                case 'year-new':
+                    sortedCars.sort((a, b) => b.year - a.year);
+                    break;
+                default:
+                    // Featured - keep original order
+                    break;
+            }
+            
+            renderCars(sortedCars);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            currentCars = [...carsData];
+            renderCars(currentCars);
+        }
+
+        // ========================
+        // INITIALIZATION
+        // ========================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚗 Car inventory with WhatsApp loaded!');
+            
+            // Initialize WhatsApp links
+            const generalMessage = "Hi AutoElite! I'm interested in your car inventory.";
+            document.getElementById('sidebarWhatsapp').href = generateWhatsAppLink(generalMessage);
+            document.getElementById('whatsappFloat').href = generateWhatsAppLink(generalMessage);
+            
+            // Render initial cars
+            renderCars(currentCars);
+            
+            // Event listeners
+            document.getElementById('mobileFiltersBtn').addEventListener('click', function() {
+                const sidebar = document.getElementById('filtersSidebar');
+                sidebar.classList.toggle('active');
+                this.innerHTML = sidebar.classList.contains('active') ? 
+                    '<i class="fas fa-times"></i> Close Filters' : 
+                    '<i class="fas fa-filter"></i> Show Filters';
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', sortCars);
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+
+            // Quick filters
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.dataset.filter;
+                    switch(filter) {
+                        case 'new':
+                            currentCars = carsData.filter(car => car.badge === 'new');
+                            break;
+                        case 'under30':
+                            currentCars = carsData.filter(car => car.price < 30000);
+                            break;
+                        case 'suv':
+                            currentCars = carsData.filter(car => car.type === 'SUV');
+                            break;
+                        case 'sedan':
+                            currentCars = carsData.filter(car => car.type === 'Sedan');
+                            break;
+                        default:
+                            currentCars = [...carsData];
+                    }
+                    renderCars(currentCars);
+                });
+            });
+
+            // Real-time search
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+        });
+    </script>
+</body>
+</html>
